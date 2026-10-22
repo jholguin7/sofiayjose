@@ -360,15 +360,34 @@ textarea::placeholder{color:#8f957f}textarea:focus-visible{outline:2px solid var
   }
   tick();setInterval(tick,1000);
 
-  /* ---- Música (solo si hay audio) ---- */
-  var audio=null,mus=$('#mus');
+  /* ---- Música (YouTube de fondo) ---- */
+  var mus=$('#mus'),yt=null,ytReady=false,wantPlay=false,VID='tyoAsprwDRc';
+  window.onYouTubeIframeAPIReady=function(){
+    try{yt=new YT.Player('ytp',{width:'200',height:'200',videoId:VID,
+      playerVars:{autoplay:0,controls:0,disablekb:1,fs:0,loop:1,playlist:VID,playsinline:1,rel:0,modestbranding:1,iv_load_policy:3},
+      events:{
+        onReady:function(){ytReady=true;try{yt.setVolume(55)}catch(e){}if(wantPlay)yt.playVideo()},
+        onStateChange:function(e){
+          if(e.data===1)mus.setAttribute('aria-pressed','true');
+          else if(e.data===2)mus.setAttribute('aria-pressed','false');
+          else if(e.data===0)yt.playVideo();
+        }
+      }});
+    }catch(e){}
+  };
+  (function(){
+    var h=document.createElement('div');h.setAttribute('aria-hidden','true');
+    h.style.cssText='position:fixed;right:0;bottom:0;width:200px;height:200px;opacity:.01;pointer-events:none;z-index:-1;overflow:hidden';
+    h.innerHTML='<div id="ytp"></div>';document.body.appendChild(h);
+    var s=document.createElement('script');s.src='https://www.youtube.com/iframe_api';s.async=true;document.head.appendChild(s);
+  })();
   function startMusic(){
-    if(!CFG.audio||audio)return;
-    try{audio=new Audio(CFG.audio);audio.loop=true;audio.volume=.55;audio.play().catch(function(){mus.setAttribute('aria-pressed','false')});mus.hidden=false}catch(e){}
+    wantPlay=true;mus.hidden=false;
+    if(ytReady){try{yt.playVideo()}catch(e){}}
   }
   mus.addEventListener('click',function(){
-    if(!audio)return;
-    if(audio.paused){audio.play();mus.setAttribute('aria-pressed','true')}else{audio.pause();mus.setAttribute('aria-pressed','false')}
+    if(!ytReady)return;
+    if(yt.getPlayerState()===1){yt.pauseVideo()}else{yt.playVideo()}
   });
 
   /* ---- Sobre ---- */
