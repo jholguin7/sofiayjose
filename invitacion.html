@@ -364,9 +364,10 @@ textarea::placeholder{color:#8f957f}textarea:focus-visible{outline:2px solid var
   var mus=$('#mus'),yt=null,ytReady=false,wantPlay=false,VID='tyoAsprwDRc';
   window.onYouTubeIframeAPIReady=function(){
     try{yt=new YT.Player('ytp',{width:'200',height:'200',videoId:VID,
-      playerVars:{autoplay:0,controls:0,disablekb:1,fs:0,loop:1,playlist:VID,playsinline:1,rel:0,modestbranding:1,iv_load_policy:3},
+      playerVars:{autoplay:1,mute:1,controls:0,disablekb:1,fs:0,loop:1,playlist:VID,playsinline:1,rel:0,modestbranding:1,iv_load_policy:3},
       events:{
-        onReady:function(){ytReady=true;try{yt.setVolume(55)}catch(e){}if(wantPlay)yt.playVideo()},
+        onError:function(e){window.__yterr=e.data},
+        onReady:function(){ytReady=true;window.__yt=yt;try{yt.mute();yt.playVideo()}catch(e){}if(wantPlay)go()},
         onStateChange:function(e){
           if(e.data===1)mus.setAttribute('aria-pressed','true');
           else if(e.data===2)mus.setAttribute('aria-pressed','false');
@@ -381,13 +382,14 @@ textarea::placeholder{color:#8f957f}textarea:focus-visible{outline:2px solid var
     h.innerHTML='<div id="ytp"></div>';document.body.appendChild(h);
     var s=document.createElement('script');s.src='https://www.youtube.com/iframe_api';s.async=true;document.head.appendChild(s);
   })();
+  function go(){try{yt.unMute();yt.setVolume(100);yt.seekTo(0,true);yt.playVideo()}catch(e){}}
   function startMusic(){
     wantPlay=true;mus.hidden=false;
-    if(ytReady){try{yt.playVideo()}catch(e){}}
+    if(ytReady)go();
   }
   mus.addEventListener('click',function(){
     if(!ytReady)return;
-    if(yt.getPlayerState()===1){yt.pauseVideo()}else{yt.playVideo()}
+    if(yt.getPlayerState()===1&&!yt.isMuted()){yt.pauseVideo()}else{yt.unMute();yt.setVolume(100);yt.playVideo()}
   });
 
   /* ---- Sobre ---- */
