@@ -286,7 +286,7 @@ textarea::placeholder{color:#8f957f}textarea:focus-visible{outline:2px solid var
       <div class="dv"><i></i><i></i></div>
       <p class="eyebrow">Por favor, confirma tu asistencia aquí</p>
       <form class="rsvp" id="rsvpForm" autocomplete="off" novalidate>
-        <fieldset><label for="rName">Tu nombre</label><input type="text" id="rName" name="nombre" placeholder="Nombre y apellido" maxlength="60" autocomplete="name"></fieldset>
+        <fieldset id="fsName"><label for="rName">Tu nombre</label><input type="text" id="rName" name="nombre" placeholder="Nombre y apellido" maxlength="60" autocomplete="name"></fieldset>
         <fieldset><legend id="lgAtt">Asistencia</legend>
           <div class="tgs" role="radiogroup" aria-labelledby="lgAtt">
             <button type="button" class="tg" role="radio" aria-checked="true" data-v="yes">Asistiré</button>
@@ -342,7 +342,7 @@ textarea::placeholder{color:#8f957f}textarea:focus-visible{outline:2px solid var
   if(guest){
     var g=$('#introGuest');g.textContent='Para '+guest;g.hidden=false;if(guest.length>16)g.style.fontSize=guest.length>26?'1.9rem':'2.3rem';
     $('#guestName').textContent=guest;$('#guestLine').hidden=false;
-    $('#rName').value=guest;
+    $('#rName').value=guest;var fs=$('#fsName');if(fs&&window.__code&&guest){fs.hidden=true;fs.style.display='none'}
   }
 
   /* ---- Enlaces ---- */
