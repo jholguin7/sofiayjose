@@ -293,13 +293,6 @@ textarea::placeholder{color:#8f957f}textarea:focus-visible{outline:2px solid var
             <button type="button" class="tg" role="radio" aria-checked="false" data-v="no">No podré</button>
           </div>
         </fieldset>
-        <div id="yesSet">
-          <fieldset><legend>Personas</legend>
-            <div class="step"><button type="button" id="minus" aria-label="Menos personas">−</button><output id="count" aria-live="polite">1</output><button type="button" id="plus" aria-label="Más personas">+</button></div>
-          </fieldset>
-          <fieldset><label for="rDiet">Restricciones alimentarias</label><input type="text" id="rDiet" maxlength="120" placeholder="Ninguna"></fieldset>
-        </div>
-        <fieldset><label for="rMsg">Mensaje (opcional)</label><textarea id="rMsg" maxlength="300" rows="3" placeholder="Unas palabras para nosotros"></textarea></fieldset>
         <input type="text" id="rHp" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0">
         <button class="btn solid" id="sendBtn" type="submit">Confirmar</button>
         <p class="rstat" id="rStat" role="status" aria-live="polite"></p>
@@ -442,22 +435,18 @@ textarea::placeholder{color:#8f957f}textarea:focus-visible{outline:2px solid var
   });
 
   /* ---- Confirmación ---- */
-  var nm=$('#rName'),diet=$('#rDiet'),msg=$('#rMsg'),hp=$('#rHp'),btn=$('#sendBtn'),stat=$('#rStat'),form=$('#rsvpForm');
-  var cnt=1,att='yes',busy=false;
+  var nm=$('#rName'),hp=$('#rHp'),btn=$('#sendBtn'),stat=$('#rStat'),form=$('#rsvpForm');
+  var att='yes',busy=false;
   var tgs=[].slice.call(document.querySelectorAll('.tg'));
   function upd(){
-    $('#count').textContent=cnt;
-    $('#yesSet').hidden=att==='no';
     btn.textContent=att==='yes'?'Confirmar':'Enviar';
   }
   tgs.forEach(function(b){b.addEventListener('click',function(){
     att=b.getAttribute('data-v');
     tgs.forEach(function(x){x.setAttribute('aria-checked',x===b)});upd();
   })});
-  $('#minus').addEventListener('click',function(){cnt=Math.max(1,cnt-1);upd()});
-  $('#plus').addEventListener('click',function(){cnt=Math.min(10,cnt+1);upd()});
   function fallback(d){
-    var t='Confirmación boda Sofía y José (14 nov). Asistencia: '+(d.asistencia==='SI'?'SÍ':'NO')+'. Nombre: '+d.nombre+(d.asistencia==='SI'?'. Personas: '+d.personas:'')+'.';
+    var t='Confirmación boda Sofía y José (14 nov). Asistencia: '+(d.asistencia==='SI'?'SÍ':'NO')+'. Nombre: '+d.nombre+'.';
     stat.innerHTML='No pudimos enviar tu respuesta. <a target="_blank" rel="noopener" href="https://wa.me/'+CFG.wa+'?text='+encodeURIComponent(t)+'">Envíala por WhatsApp</a>.';
   }
   form.addEventListener('submit',function(e){
@@ -465,8 +454,7 @@ textarea::placeholder{color:#8f957f}textarea:focus-visible{outline:2px solid var
     if(busy)return;
     var name=nm.value.trim();
     if(name.length<3){stat.textContent='Escribe tu nombre y apellido.';nm.focus();return}
-    var d={nombre:name,asistencia:att==='yes'?'SI':'NO',personas:att==='yes'?cnt:0,
-      restricciones:att==='yes'?diet.value.trim():'',mensaje:msg.value.trim(),website:hp.value};
+    var d={nombre:name,asistencia:att==='yes'?'SI':'NO',personas:att==='yes'?1:0,restricciones:'',mensaje:'',website:hp.value};
     busy=true;btn.disabled=true;stat.textContent='Enviando…';
     if(!CFG.rsvp||CFG.rsvp.indexOf('script.google.com')<0){busy=false;btn.disabled=false;fallback(d);return}
     fetch(CFG.rsvp,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(d)})
